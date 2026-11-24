@@ -12,14 +12,30 @@ OpenBSD base: master `c402c876540c` (2026-11-24, 8.0-current; 8.0 released 2026-
 | `pcc`, branches `dmr`, `pdp64`, `aarch64`, `riscv` | one repo, linked from the site as separate projects named `pcc-dmr`, `pcc-pdp64`, `pcc-aarch64` (URLs `github.com/moebiusV/pcc/tree/<branch>`) | `dmr` first, then pdp64, aarch64, riscv: it holds all the dmr/sj optimisation work and is the base the other three are rebased onto |
 | `openbsd-pdp64` | this repo: OpenBSD tree on branch `pdp64`, plan in `pdp64-port/` | `openbsd/src` -current |
 
-Order of the pcc work (decided 2026-11-24): disentangle the branches in the one repo, in this
-priority: **`dmr` (the optimisations) is top priority**, since every back end benefits and is based
-on it; then **`pdp64`**, then **`aarch64`**, then **`riscv`**, each rebased onto `dmr`.
-Prerequisite found while checking: no `dmr` branch exists yet in `~/claude/pcc` (local: `master`,
-`single-pdp64`, `wsl/*`; remote: `origin/chk-builtins`, `origin/imp72-*`,
-`origin/fix-pdp11-relational-canonicalization`); which commits are "the optimisation work" must be
-identified before the rebase. (The pdp64 handoff calls the pcc RISC-V back end a separate project;
-here it simply becomes the fourth branch.)
+**Done 2026-11-24** (nothing existing was touched; all new branches):
+
+- `moebiusV/openbsd-pdp64`: a GitHub fork of `openbsd/src`, branch `pdp64` (this plan). The
+  `upstream` remote's push URL is disabled so nothing can reach `openbsd/src`.
+- `moebiusV/llvm-pdp64` and `moebiusV/qemu-pdp64`: `git subtree split` of `pdp64/llvm` (31 commits)
+  and `pdp64/qemu` (53 commits), history kept, plus a README note. `pdp64/llvm` and `pdp64/qemu`
+  stay as they are and remain the source of truth; the scripts in the split repos still assume the
+  `pdp64/<dir>` layout.
+- `moebiusV/pcc` branches **`dmr`** (115 commits), **`pdp64`** (+72) and **`aarch64`** (+11), all
+  based on upstream PortableCC `9a993a5f`; `pdp64` and `aarch64` sit on top of `dmr`. Existing
+  branches (`master`, `single-pdp64`, `chk-builtins`, ...) are untouched. Built by
+  `tools/pcc-split.py` from the union of `single-pdp64` and `chk-builtins` (they merge cleanly;
+  `master` carries only cherry-picks of the same header-export commits).
+  Rules: a commit titled `pdp64...` or `-xchecks...` goes wholly to `pdp64`, one titled `aarch64...`
+  wholly to `aarch64`; every other commit (optimisation and shared work) goes to `dmr`, with its
+  `arch/pdp64`, `doc/PDP64*` and `arch/aarch64` file parts split off to those branches. So
+  `-xchecks`, `-xtailcall` and the pdp64 jump tables are on `pdp64`, not `dmr`.
+  Checks: `pdp64` merged with `aarch64` equals the combined tree except one line of `cc/cc/cc.c`
+  (both back ends edit the same `#if defined(mach_...)`, a real merge conflict); `ccom` built from
+  each branch gives the same assembly as the combined tip on 47 C test files for pdp64, pdp11,
+  x86_64 and aarch64 (internal label numbers differ by a constant 8 and are normalised away by
+  `tools/normlabels.py`); `dmr` mentions pdp64 nowhere outside `arch/pdp64`.
+- Not yet done: a `riscv` branch (nothing to split: the fork has no RISC-V work), `crunt` repo
+  directory rename, pointing `pdp64/tools/build-pcc.sh` at the new branches.
 
 Later work after the OpenBSD port itself: port the **9Frank** filesystem and the **filsys**
 filesystem (the latter is a FUSE driver today).
