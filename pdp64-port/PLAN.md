@@ -20,14 +20,13 @@ OpenBSD base: master `c402c876540c` (2026-11-24, 8.0-current; 8.0 released 2026-
   and `pdp64/qemu` (53 commits), history kept, plus a README note. `pdp64/llvm` and `pdp64/qemu`
   stay as they are and remain the source of truth; the scripts in the split repos still assume the
   `pdp64/<dir>` layout.
-- `moebiusV/pcc` branches **`dmr-2`** (127 commits), **`pdp64-2`** (+73) and **`aarch64-2`** (+12),
-  all based on upstream PortableCC `9a993a5f`; `pdp64-2` and `aarch64-2` sit on top of `dmr-2`.
-  These replace an earlier push of `dmr`, `pdp64` and `aarch64` (same day), which classified
-  commits by title and left optimisation work on the back-end branches; those three are still on
-  the remote, superseded, until they are retired. Other branches (`master`, `single-pdp64`,
-  `chk-builtins`, ...) are untouched. Built by `tools/pcc-split.py` from the union of
-  `single-pdp64` and `chk-builtins` (they merge cleanly; `master` carries only cherry-picks of the
-  same header-export commits).
+- `moebiusV/pcc` branches **`dmr`** (127 commits), **`pdp64`** (+73) and **`aarch64`** (+12), all
+  based on upstream PortableCC `9a993a5f`; `pdp64` and `aarch64` sit on top of `dmr`. An earlier
+  push of the same names (classified by commit title, with optimisation work left on the back-end
+  branches) was replaced by a force-push the same day, leased to exactly those commits. Other
+  branches (`master`, `single-pdp64`, `chk-builtins`, ...) are untouched. Built by
+  `tools/pcc-split.py` from the union of `single-pdp64` and `chk-builtins` (they merge cleanly;
+  `master` carries only cherry-picks of the same header-export commits).
   Rule: **everything goes to `dmr` unless it is specific to the pdp64 or the aarch64 back end**,
   judged per commit by the files and hunks it touches. So `dmr` has all of `-xchecks` (the
   front-end bounds checks, the `CHKT`/`CHKZ` operators), `-xtailcall` and `-xccp` plumbing, the
@@ -39,7 +38,7 @@ OpenBSD base: master `c402c876540c` (2026-11-24, 8.0-current; 8.0 released 2026-
   `cc/cc/cc.c` no longer names back ends: it asks for `TARGET_XDMR` and `TARGET_NOXSSA`, which each
   back end defines in its own `macdefs.h` (so adding a back end never edits `cc.c`, and `pdp64-2`
   and `aarch64-2` merge with no conflict; the first split had a same-line conflict there).
-  Checks: `pdp64-2` merged with `aarch64-2` is conflict-free and differs from the combined tip only
+  Checks: `pdp64` merged with `aarch64` is conflict-free and differs from the combined tip only
   in `cc.c` and the `macdefs.h` of pdp11, powerpc, aarch64 and pdp64 (the macros); `ccom` built from
   each branch gives byte-identical assembly to the combined tip on 47 C test files for pdp64,
   pdp11, x86_64 and aarch64, including `-xchecks`; the driver passes the same `-x` options for `-O`
@@ -47,7 +46,7 @@ OpenBSD base: master `c402c876540c` (2026-11-24, 8.0-current; 8.0 released 2026-
   stops with "Cannot generate code, node op CHKT", on the combined tip as well; the comment in
   `builtins.c` says "works on every target", which is not yet true. The pdp64 driver
   (`cc/cc`) does not build for `pdp64-unknown-linux` on either, only `ccom` does.
-- Not yet done: retiring the superseded `dmr`/`pdp64`/`aarch64` branches and repointing the site and `pdp64/tools/build-pcc.sh`; a `riscv` branch (nothing to split: the fork has no RISC-V work), `crunt` repo
+- Not yet done: pointing `pdp64/tools/build-pcc.sh` at the new branches; a `riscv` branch (nothing to split: the fork has no RISC-V work), `crunt` repo
   directory rename, pointing `pdp64/tools/build-pcc.sh` at the new branches.
 
 Later work after the OpenBSD port itself: port the **9Frank** filesystem and the **filsys**
