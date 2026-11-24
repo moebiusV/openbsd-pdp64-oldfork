@@ -32,12 +32,12 @@ OpenBSD base: master `c402c876540c` (2026-11-24, 8.0-current; 8.0 released 2026-
   front-end bounds checks, the `CHKT`/`CHKZ` operators), `-xtailcall` and `-xccp` plumbing, the
   `-xno-NAME` mechanism with `TARGET_XDEFAULTS`/`TARGET_XNO`, and the ccp type fix. Only these
   shared-file changes are back-end specific (the table `OVERRIDES` in the script): the `pdp64`
-  entry in `configure`/`config.sub`, pdp64's `"; jtab"` marker in `mip/optim2.c` (-> `pdp64-2`);
+  entry in `configure`/`config.sub`, pdp64's `"; jtab"` marker in `mip/optim2.c` (-> `pdp64`);
   the README text on the aarch64 back end and `pr_ellidx`, which exists only for Apple varargs
-  (-> `aarch64-2`).
+  (-> `aarch64`).
   `cc/cc/cc.c` no longer names back ends: it asks for `TARGET_XDMR` and `TARGET_NOXSSA`, which each
-  back end defines in its own `macdefs.h` (so adding a back end never edits `cc.c`, and `pdp64-2`
-  and `aarch64-2` merge with no conflict; the first split had a same-line conflict there).
+  back end defines in its own `macdefs.h` (so adding a back end never edits `cc.c`, and `pdp64`
+  and `aarch64` merge with no conflict; the first split had a same-line conflict there).
   Checks: `pdp64` merged with `aarch64` is conflict-free and differs from the combined tip only
   in `cc.c` and the `macdefs.h` of pdp11, powerpc, aarch64 and pdp64 (the macros); `ccom` built from
   each branch gives byte-identical assembly to the combined tip on 47 C test files for pdp64,
