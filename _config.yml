@@ -1,0 +1,7 @@
+title: openbsd-pdp64
+description: The plan for porting OpenBSD to the pdp64: what must be ready before it boots, the assembly to translate, what LLVM must provide, and what each mitigation costs.
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
